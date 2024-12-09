@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Project Form</title>
+</head>
+<body>
+  <h1>Feed Me </h1>
+  <form action="/submit" method="post">
+    <label for="title">Project Name:</label><br>
+    <input type="text" id="title" name="title" required><br><br>
+    <label for="website">Website:</label><br>
+    <input type="text" id="website" name="website" required><br><br>
+
+    <label for="tags">Tags (comma-separated):</label><br>
+    <input type="text" id="tags" name="tags" required><br><br>
+
+    <label for="comments">Comments:</label><br>
+    <textarea id="comments" name="comments"></textarea><br><br>
+
+    <button type="submit">Submit</button>
+    <div id="error-message"></div> </form>
+  </form>
+  <button id="download-button">Download Projects</button>
+  <script>
+    const form = document.querySelector('form')
+    const errorMessage = document.querySelector('#error-message')
+    form.addEventListener('submit',(event)=>{
+      event.preventDefault()
+      fetch('/submit',{
+        method:'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams(new FormData(form)).toString()
+      }).then(response=>{
+        if (!response.ok)
+          return response.text().then(text=>{
+            throw new Error(text)
+          })
+        return response.text()
+      }).then(message=>{
+        errorMessage.textContent='Project saved successfully'
+        errorMessage.style.color='green'
+        form.reset()
+      })
+      .catch(error=>{
+        errorMessage.textContent=error.message
+        errorMessage.style.color='red'
+      })
+    })
+    const downloadButton = document.getElementById('download-button');
+    downloadButton.addEventListener('click', () => {
+      window.location.href = '/download-projects';
+    });
+  </script>
+</body>
+</html>
